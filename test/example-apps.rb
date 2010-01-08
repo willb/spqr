@@ -123,4 +123,36 @@ class QmfIntegerProp
   qmf_package_name :example
 end
 
-
+class QmfMapParam
+  include ::SPQR::Manageable
+  
+  def initialize
+    @dict = {}
+  end
+  
+  def QmfMapParam.find_by_id(oid)
+    @qmf_mpts ||= [self.new]
+    @qmf_mpts[0]
+  end
+    
+  def QmfMapParam.find_all
+    @qmf_mpts ||= [self.new]
+    @qmf_mpts
+  end
+  
+  qmf_property :dict, :map
+  
+  def set_map(arg)
+    @dict = arg.dup
+  end
+  
+  def add_to_map(arg)
+    arg.keys.each {|k| @dict[k] = arg[k] }
+  end
+  
+  [:set_map, :add_to_map].each do |m|
+    expose m do |args|
+      args.declare :m, :map, :in
+    end
+  end
+end
