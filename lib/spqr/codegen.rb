@@ -371,7 +371,7 @@ module SPQR
     # cc is the name of the variable that will hold a collection of schema classes
     def gen
       with_output_to @fn do
-        pp "require 'rubygems'"
+        pp "require 'rubygems' rescue nil"
         pp "require 'spqr/spqr'"
         pp "require 'spqr/app'"
 

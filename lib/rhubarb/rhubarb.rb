@@ -11,7 +11,7 @@
 # 
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-require 'rubygems'
+require 'rubygems' rescue nil
 require 'set'
 require 'time'
 require 'sqlite3'
