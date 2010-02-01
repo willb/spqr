@@ -21,7 +21,6 @@ SPQR makes it very simple to expose methods on Ruby objects over QMF.
 %package rhubarb
 Summary: Simple versioned object-graph persistence layer
 Group: Applications/System
-Requires: spqr-rhubarb
 Requires: ruby-sqlite3
 Requires: ruby
 
