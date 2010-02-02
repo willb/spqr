@@ -53,7 +53,7 @@ task :rpmspec => :build do
 end
 
 desc "create RPMs"
-task :rpms => :tarball do
+task :rpms => [:build, :tarball] do
   require 'fileutils'
   FileUtils.cp pkg_spec(), 'SPECS'
   sh "rpmbuild --define=\"_topdir \${PWD}\" -ba SPECS/#{pkg_spec}"
@@ -65,8 +65,7 @@ task :tarball => :make_rpmdirs do
   FileUtils.cp_r 'bin', pkg_dir()
   FileUtils.cp_r 'lib', pkg_dir()
   FileUtils.cp_r 'examples', pkg_dir()
-  FileUtils.cp 'LICENSE', pkg_dir()
-  FileUtils.cp 'README.rdoc', pkg_dir()
+  FileUtils.cp ['LICENSE', 'README.rdoc', 'CHANGES', 'TODO', 'VERSION'], pkg_dir()
   sh "tar -cf #{pkg_source} #{pkg_dir}"
   FileUtils.mv pkg_source(), 'SOURCES'
 end

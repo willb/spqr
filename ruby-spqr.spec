@@ -12,21 +12,10 @@ Source0: %{name}-%{version}-%{rel}.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 Requires: ruby
 Requires: ruby-qmf
-Requires: ruby-spqr-rhubarb
 BuildArch: noarch
 
 %description
 SPQR makes it very simple to expose methods on Ruby objects over QMF.
-
-%package rhubarb
-Summary: Simple versioned object-graph persistence layer
-Group: Applications/System
-Requires: ruby-sqlite3
-Requires: ruby
-
-%description rhubarb
-A simple versioned object-graph persistence layer that stores
-instances of specially-declared Ruby classes in a SQLite3 database
 
 %package -n spqr-gen
 Summary: Generates an spqr app from an xml schema
@@ -58,8 +47,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root, -)
-%doc LICENSE
-%doc README.rdoc
+%doc LICENSE README.rdoc CHANGES TODO VERSION
 %doc examples
 %{ruby_sitelib}/spqr
 
