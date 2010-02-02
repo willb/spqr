@@ -24,7 +24,12 @@
 
 require 'spqr/spqr'
 require 'spqr/app'
-require 'rhubarb/rhubarb'
+begin
+  require 'rhubarb/rhubarb' 
+rescue LoadError
+  puts "You must have Rhubarb installed to run this example.\nTry \"gem install rhubarb\", and ensure that it is in your load path."
+  Process.exit
+end
 
 class LogService
   include SPQR::Manageable

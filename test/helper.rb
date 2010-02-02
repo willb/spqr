@@ -9,7 +9,6 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'spqr/spqr'
 require 'spqr/app'
-require 'rhubarb/rhubarb'
 
 module QmfTestHelpers
   DEBUG = (::ENV["SPQR_TESTS_DEBUG"] and ::ENV["SPQR_TESTS_DEBUG"].downcase == "yes")
