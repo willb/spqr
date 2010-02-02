@@ -1,4 +1,4 @@
-require 'rubygems'
+require 'rubygems' rescue nil
 require 'test/unit'
 require 'qmf'
 require 'timeout'
