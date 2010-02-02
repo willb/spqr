@@ -3,7 +3,7 @@
 
 Summary: SPQR:  {Schema Processor|Straightforward Publishing} for QMF agents in Ruby
 Name: ruby-spqr
-Version: 0.1.3
+Version: 0.2.0
 Release: %{rel}%{?dist}
 Group: Applications/System
 License: ASL 2.0
@@ -45,8 +45,6 @@ A tool that will generate an spqr application from an xml schema file
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/%{_bindir}
 mkdir -p %{buildroot}/%{ruby_sitelib}/spqr
-mkdir -p %{buildroot}/%{ruby_sitelib}/rhubarb
-cp -f lib/rhubarb/rhubarb.rb %{buildroot}/%{ruby_sitelib}/rhubarb
 cp -f lib/spqr/app.rb %{buildroot}/%{ruby_sitelib}/spqr
 cp -f lib/spqr/codegen.rb %{buildroot}/%{ruby_sitelib}/spqr
 cp -f lib/spqr/constants.rb %{buildroot}/%{ruby_sitelib}/spqr
@@ -71,11 +69,6 @@ rm -rf %{buildroot}
 %defattr(755, root, root, -)
 %{_bindir}/spqr-gen.rb
 
-%files rhubarb
-%defattr(-, root, root, -)
-%doc LICENSE
-%{ruby_sitelib}/rhubarb
-
 %changelog
-* Thu Jan 28 2010  <rrati@fedora12-test> - 0.1.3-1
+* Tue Feb  2 2010  <rrati@fedora12-test> - 0.2.0-0.1
 - Initial package
