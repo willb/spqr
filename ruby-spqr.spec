@@ -1,5 +1,5 @@
 %{!?ruby_sitelib: %global ruby_sitelib %(ruby -rrbconfig -e 'puts Config::CONFIG["sitelibdir"] ')}
-%define rel 0.1
+%define rel 0.2
 
 Summary: SPQR:  {Schema Processor|Straightforward Publishing} for QMF agents in Ruby
 Name: ruby-spqr
@@ -10,8 +10,10 @@ License: ASL 2.0
 URL: http://git.fedorahosted.org/git/grid/spqr.git
 Source0: %{name}-%{version}-%{rel}.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+Requires: ruby(abi) = 1.8
 Requires: ruby
 Requires: ruby-qmf
+BuildRequires: ruby
 BuildArch: noarch
 
 %description
@@ -21,6 +23,8 @@ SPQR makes it very simple to expose methods on Ruby objects over QMF.
 Summary: Generates an spqr app from an xml schema
 Group: Applications/System
 Requires: ruby-spqr
+Requires: ruby(abi) = 1.8
+Requires: ruby
 
 %description -n spqr-gen
 A tool that will generate an spqr application from an xml schema file
@@ -49,7 +53,12 @@ rm -rf %{buildroot}
 %defattr(-, root, root, -)
 %doc LICENSE README.rdoc CHANGES TODO VERSION
 %doc examples
-%{ruby_sitelib}/spqr
+%{ruby_sitelib}/spqr/app.rb
+%{ruby_sitelib}/spqr/codegen.rb
+%{ruby_sitelib}/spqr/constants.rb
+%{ruby_sitelib}/spqr/manageable.rb
+%{ruby_sitelib}/spqr/spqr.rb
+%{ruby_sitelib}/spqr/utils.rb
 
 %files -n spqr-gen
 %defattr(-, root, root, -)
@@ -58,5 +67,8 @@ rm -rf %{buildroot}
 %{_bindir}/spqr-gen.rb
 
 %changelog
-* Tue Feb  2 2010  <rrati@fedora12-test> - 0.2.0-0.1
+* Fri Feb  5 2020  <rrati@redhat> - 0.2.0-0.2
+- Fixed packaging issues
+
+* Tue Feb  2 2010  <rrati@redhat> - 0.2.0-0.1
 - Initial package
