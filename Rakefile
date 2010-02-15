@@ -23,8 +23,12 @@ def pkg_version
   return version.chomp
 end
 
+def name
+  return "spqr"
+end
+
 def pkg_name
-  return 'ruby-spqr'
+  return "ruby-" + name()
 end
 
 def pkg_spec
@@ -53,15 +57,18 @@ task :rpmspec => :build do
 end
 
 desc "create RPMs"
-task :rpms => [:build, :tarball] do
-  require 'fileutils'
+task :rpms => [:build, :tarball, :gen_spec] do
   FileUtils.cp pkg_spec(), 'SPECS'
   sh "rpmbuild --define=\"_topdir \${PWD}\" -ba SPECS/#{pkg_spec}"
 end
 
+desc "Generate the specfile"
+task :gen_spec do
+  sh "cat #{pkg_spec}" + ".in" + "| sed 's/SPQR_VERSION/#{pkg_version}/' > #{pkg_spec}"
+end
+
 desc "Create a tarball"
-task :tarball => :make_rpmdirs do
-  require 'fileutils'
+task :tarball => [:make_rpmdirs, :gen_spec] do
   FileUtils.cp_r 'bin', pkg_dir()
   FileUtils.cp_r 'lib', pkg_dir()
   FileUtils.cp_r 'examples', pkg_dir()
@@ -71,17 +78,15 @@ task :tarball => :make_rpmdirs do
 end
 
 desc "Make dirs for building RPM"
-task :make_rpmdirs => :rpm_clean do
-  require 'fileutils'
+task :make_rpmdirs => :clean do
   FileUtils.mkdir pkg_dir()
   FileUtils.mkdir rpm_dirs()
 end
 
 desc "Cleanup after an RPM build"
-task :rpm_clean do
+task :clean do
   require 'fileutils'
-  FileUtils.rm_r pkg_dir(), :force => true
-  FileUtils.rm_r rpm_dirs(), :force => true
+  FileUtils.rm_r [pkg_dir(), rpm_dirs(), pkg_spec(), 'pkg', name() + ".gemspec"], :force => true
 end
 
 require 'spec/rake/spectask'

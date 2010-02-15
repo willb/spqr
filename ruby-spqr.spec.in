@@ -3,7 +3,7 @@
 
 Summary: SPQR:  {Schema Processor|Straightforward Publishing} for QMF agents in Ruby
 Name: ruby-spqr
-Version: 0.2.0
+Version: SPQR_VERSION
 Release: %{rel}%{?dist}
 Group: Applications/System
 License: ASL 2.0
