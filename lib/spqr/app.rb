@@ -20,6 +20,8 @@ module SPQR
   class App < Qmf::AgentHandler
     class ClassMeta < Struct.new(:object_class, :schema_class) ; end
 
+    attr_reader :agent
+
     def initialize(options=nil)
       defaults = {:logfile=>STDERR, :loglevel=>Logger::WARN, :notifier=>nil, :server=>"localhost", :port=>5672}
       
@@ -66,7 +68,8 @@ module SPQR
         schemaclass = schematize(klass)
 
         klass.log = @log
-
+        klass.app = self
+        
         @classes_by_id[klass.class_id] = klass
         @classes_by_name[klass.spqr_meta.classname.to_s] = ClassMeta.new(klass, schemaclass)
       end

@@ -136,6 +136,14 @@ module SPQR
       @spqr_log || ::SPQR::Sink.new
     end
     
+    def app=(app)
+      @spqr_app = app
+    end
+    
+    def app
+      @spqr_app
+    end
+    
     # Exposes a method to QMF
     def expose(name, description=nil, options=nil, &blk)
       spqr_meta.declare_method(name, description, options, blk)
