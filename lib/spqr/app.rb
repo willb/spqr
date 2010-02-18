@@ -69,7 +69,7 @@ module SPQR
 
         klass.log = @log
         
-        @log.debug("SETTING klass.app to #{self.inspect}")
+        @log.info("SETTING #{klass.spqr_meta.classname}.app to #{self.inspect}")
         klass.app = self
         
         @classes_by_id[klass.class_id] = klass
