@@ -170,7 +170,8 @@ module SPQR
 
     def main
       # XXX:  fix and parameterize as necessary
-      @log.debug("starting SPQR::App.main...")
+      @log.debug("starting SPQR::App.main (SPQR version 0.2.0+)...")
+      sleep(1)
       
       settings = Qmf::ConnectionSettings.new
       settings.host = @qmf_host
