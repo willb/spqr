@@ -68,6 +68,8 @@ module SPQR
         schemaclass = schematize(klass)
 
         klass.log = @log
+        
+        @log.debug("SETTING klass.app to #{self.inspect}")
         klass.app = self
         
         @classes_by_id[klass.class_id] = klass
