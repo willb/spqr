@@ -1,5 +1,5 @@
 %{!?ruby_sitelib: %global ruby_sitelib %(ruby -rrbconfig -e 'puts Config::CONFIG["sitelibdir"] ')}
-%define rel 0.2
+%define rel 0.3
 
 Summary: SPQR:  {Schema Processor|Straightforward Publishing} for QMF agents in Ruby
 Name: ruby-spqr
@@ -67,7 +67,10 @@ rm -rf %{buildroot}
 %{_bindir}/spqr-gen.rb
 
 %changelog
-* Fri Feb  5 2020  <rrati@redhat> - 0.2.0-0.2
+* Fri Feb 19 2010  <willb@redhat> - 0.2.0-0.3
+- The SPQR application object is now exposed to managed classes
+
+* Fri Feb  5 2010  <rrati@redhat> - 0.2.0-0.2
 - Fixed packaging issues
 
 * Tue Feb  2 2010  <rrati@redhat> - 0.2.0-0.1
