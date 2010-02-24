@@ -1,4 +1,17 @@
-version 0.2.0
+version 0.2.1 (f29e675e71445f63fae7e988707f07fc705c63bd)
+
+*  SPQR apps now log much less verbosely by default and allow specifying 
+   additional log options.
+
+*  Bug fix related to boolean-valued properties and statistics.
+
+*  Changed default application (and queue) name to include the process ID.
+
+*  Manageable classes can now refer to the app object in which they 
+   are running via the app member function.  This functionality should 
+   be considered experimental and may disappear in a future release.
+
+version 0.2.0 (b519a04fbc148ef10e11e3b62aba15b656900278)
 
 *  SPQR and Rhubarb are now separate projects.
 
