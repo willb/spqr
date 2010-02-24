@@ -52,7 +52,7 @@ module SPQR
       @qmf_sendUserId = if options.has_key?(:send_user_id)
                           options[:send_user_id]
                         else
-                          (options.has_key?(:user) or options.has_key?(:password))
+                          (options.has_key?(:user) || options.has_key?(:password))
                         end
       
       @qmf_user = options[:user]
