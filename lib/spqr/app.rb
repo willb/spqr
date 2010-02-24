@@ -46,7 +46,7 @@ module SPQR
       @classes_by_name = {}
       @classes_by_id = {}
       @pipe = options[:notifier]
-      @app_name = (options[:appname] or "SPQR application")
+      @app_name = (options[:appname] or "SPQR application [#{Process.pid}]")
       @qmf_host = options[:server]
       @qmf_port = options[:port]
       @qmf_sendUserId = if options.has_key?(:send_user_id)
