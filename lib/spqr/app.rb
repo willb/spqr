@@ -38,7 +38,9 @@ module SPQR
       # fix up shorthands
       options[:loglevel] = loglevels[options[:loglevel]] if loglevels[options[:loglevel]]
 
-      @log = Logger.new(options[:logfile])
+      logger_opts = ([options[:logfile]] + [options[:logoptions]]).flatten.compact
+
+      @log = Logger.new(*logger_opts)
       @log.level = options[:loglevel]
 
       @log.info("initializing SPQR app....")
@@ -140,8 +142,6 @@ module SPQR
 
     def get_query(context, query, user_id)
       @log.debug "query: user=#{user_id} context=#{context} class=#{query.class_name} object_num=#{query.object_id.object_num_low if query.object_id} details=#{query} haveSelect=#{query.impl and query.impl.haveSelect} getSelect=#{query.impl and query.impl.getSelect} (#{query.impl and query.impl.getSelect and query.impl.getSelect.methods.inspect})"
-
-      @log.debug "classes_by_name is #{@classes_by_name.inspect}"
 
       cmeta = @classes_by_name[query.class_name]
       objs = []
