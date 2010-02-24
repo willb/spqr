@@ -49,7 +49,11 @@ module QmfTestHelpers
       @app.main
     end
     
+    sleep 1.0
+    
     $broker.wait_for_stable
+
+    sleep 1.5
 
     Timeout.timeout(5) do
       k = ""

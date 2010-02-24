@@ -123,4 +123,46 @@ class QmfIntegerProp
   qmf_package_name :example
 end
 
+class QmfBoolProp
+  include ::SPQR::Manageable 
 
+  SIZE = 7
+
+  def initialize(oid)
+    @int_id = oid
+  end
+
+  def spqr_object_id
+    @int_id
+  end
+ 
+  def QmfBoolProp.gen_objects(ct)
+    objs = []
+    ct.times do |x|
+      objs << (new(x))
+    end
+    objs
+  end
+  
+  def QmfBoolProp.find_by_id(oid)
+    puts "calling QBP::find_by_id"
+    @qmf_bps ||= gen_objects(SIZE)
+    @qmf_bps[oid]
+  end
+  
+  def QmfBoolProp.find_all
+    puts "calling QBP::find_all"
+    @qmf_bps ||= gen_objects(SIZE)
+    @qmf_bps
+  end
+  
+  def is_id_even
+    @int_id % 2 == 0
+  end
+  
+  qmf_property :int_id, :int, :index=>true
+  qmf_property :is_id_even, :bool
+  
+  qmf_class_name :QmfBoolProp
+  qmf_package_name :example
+end
