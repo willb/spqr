@@ -342,12 +342,14 @@ module SPQR
         getter = a.name.to_s
         @log.debug("setting property/statistic #{getter} to its value from #{o}: #{o.send(getter) if o.respond_to?(getter)}")
         value = o.send(getter) if o.respond_to?(getter)
-        if value
+
+        if value || a.kind == :bool
           # XXX: remove this line when/if Manageable includes an
           # appropriate impl method
           value = encode_object(value) if value.kind_of?(::SPQR::Manageable)
           qo[getter] = value
         end
+
       end
     end
   end
