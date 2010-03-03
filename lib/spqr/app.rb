@@ -2,7 +2,7 @@
 #
 # Application skeleton class
 #
-# Copyright (c) 2009 Red Hat, Inc.
+# Copyright (c) 2009--2010 Red Hat, Inc.
 #
 # Author:  William Benton (willb@redhat.com)
 # 
