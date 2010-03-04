@@ -166,3 +166,35 @@ class QmfBoolProp
   qmf_class_name :QmfBoolProp
   qmf_package_name :example
 end
+
+class Failbot
+  include ::SPQR::Manageable
+  
+  def Failbot.find_by_id(oid)
+    @failbots ||= [Failbot.new]
+    @failbots[0]
+  end
+  
+  def Failbot.find_all
+    @failbots ||= [Failbot.new]
+    @failbots
+  end
+
+  def fail_with_no_result
+    fail 42, "This method should not succeed, with failure code 42"
+  end
+
+  expose :fail_with_no_result do |args|
+  end
+  
+  def fail_without_expected_result
+    fail 17, "This method should not succeed, with failure code 17, and should return some garbage value"
+  end
+
+  expose :fail_without_expected_result do |args|
+    args.declare :result, :uint64, :out
+  end  
+  
+  qmf_package_name :example
+  qmf_class_name :Failbot
+end

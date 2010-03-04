@@ -23,7 +23,7 @@ module QmfTestHelpers
     end
 
     def agent_added(agent)
-      puts "GOT AN AGENT:  #{agent}" if DEBUG
+      puts "GOT AN AGENT:  #{agent} at #{Time.now.utc}" if DEBUG
       @q << agent
     end
   end
@@ -35,37 +35,45 @@ module QmfTestHelpers
       $console = Qmf::Console.new($notify_handler)
       $broker = $console.add_connection($connection)
     end
-      
-    @app = SPQR::App.new(:loglevel => (DEBUG ? :debug : :fatal))
-    @app.register *classes
+    
+    sleep 0.5
+    $broker.wait_for_stable
+        
     @child_pid = fork do 
+      sleep 0.5
       unless DEBUG
         # replace stdin/stdout/stderr
         $stdin.reopen("/dev/null", "r")
         $stdout.reopen("/dev/null", "w")
         $stderr.reopen("/dev/null", "w")
+      else
+        ENV['QPID_TRACE'] = "1"
       end
+
+      exec("#{File.dirname(__FILE__)}/generic-agent.rb", *classes.map {|cl| cl.to_s})
+      exit! 127
+
+      @app = SPQR::App.new(:loglevel => (DEBUG ? :debug : :fatal), :appname=>"#{classes.join("")}[#{Process.pid}]")
+      @app.register *classes
 
       @app.main
     end
     
-    sleep 1.0
-    
-    $broker.wait_for_stable
+    begin
+      Timeout.timeout(12) do
+        k = ""
+        begin
+          @ag = $notify_handler.queue.pop
+          k = @ag.key
+          puts "GOT A KEY:  #{k} at #{Time.now.utc}" if DEBUG
+        end until k != "1.0"
 
-    sleep 1.5
-
-    Timeout.timeout(5) do
-      k = ""
-      begin
-        @ag = $notify_handler.queue.pop
-        k = @ag.key
-        puts "GOT A KEY:  #{k}" if DEBUG
-      end until k != "1.0"
-
-      # XXX
-      sleep 0.45
-      puts "ESCAPING FROM TIMEOUT" if DEBUG
+        # XXX
+        puts "ESCAPING FROM TIMEOUT at #{Time.now.utc}" if DEBUG
+      end
+    rescue Timeout::Error
+      puts "QUEUE SIZE WAS #{$notify_handler.queue.size} at #{Time.now.utc}" if DEBUG
+      raise
     end
 
   end
