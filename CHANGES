@@ -1,3 +1,8 @@
+version 0.2.2
+
+*  Methods on manageable objects now can call fail(status, message) to 
+   signal failure in the QMF method response.
+
 version 0.2.1 (f29e675e71445f63fae7e988707f07fc705c63bd)
 
 *  SPQR apps now log much less verbosely by default and allow specifying 
