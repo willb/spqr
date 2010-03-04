@@ -86,10 +86,12 @@ module SPQR
 
     def method_call(context, name, obj_id, args, user_id)
       begin
+        status = 0
+        message = "OK"
         class_id = obj_id.object_num_high
         obj_id = obj_id.object_num_low
 
-        @log.debug "calling method: context=#{context} method=#{name} object_id=#{obj_id}, args=#{args}, user=#{user_id}"
+        @log.debug "calling method: context=#{context} method=#{name} object_id=#{obj_id}, user=#{user_id}"
 
         managed_object = find_object(context, class_id, obj_id)
         @log.debug("managed object is #{managed_object}")
@@ -107,13 +109,24 @@ module SPQR
         @log.debug("formals:  #{managed_method.formals_in.inspect}")
         @log.debug("actuals:  #{actuals_in.inspect}")
 
-        actuals_out = case actual_count
-          when 0 then managed_object.send(name.to_sym)
-          when 1 then managed_object.send(name.to_sym, actuals_in[0])
-          else managed_object.send(name.to_sym, *actuals_in)
-        end
+        actuals_out = []
 
-        raise RuntimeError.new("#{managed_object.class} did not return the appropriate number of return values; got '#{actuals_out.inspect}', but expected #{managed_method.types_out.inspect}") unless result_valid(actuals_out, managed_method)
+        begin
+          actuals_out = case actual_count
+            when 0 then managed_object.send(name.to_sym)
+            when 1 then managed_object.send(name.to_sym, actuals_in[0])
+            else managed_object.send(name.to_sym, *actuals_in)
+          end
+          
+          raise RuntimeError.new("#{managed_object.class} did not return the appropriate number of return values; got '#{actuals_out.inspect}', but expected #{managed_method.types_out.inspect}") unless result_valid(actuals_out, managed_method)
+          
+        rescue ::SPQR::ManageableObjectError => failure
+          @log.info "#{name} called SPQR::Manageable#fail:  #{failure}"
+          status = failure.status
+          message = failure.message || "ERROR"
+          # XXX:  failure.result is currently ignored by QMF
+          actuals_out = failure.result || managed_method.formals_out.inject([]) {|acc, val| acc << args[val]; acc}
+        end
         
         if managed_method.formals_out.size == 0
           actuals_out = [] # ignore return value in this case
@@ -132,7 +145,7 @@ module SPQR
           args[k] = encoded_val
         end
 
-        @agent.method_response(context, 0, "OK", args)
+        @agent.method_response(context, status, message, args)
       rescue Exception => ex
         @log.error "Error calling #{name}: #{ex}"
         @log.error "    " + ex.backtrace.join("\n    ")

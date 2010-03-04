@@ -13,6 +13,16 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 
 module SPQR
+  class ManageableObjectError < RuntimeError
+    attr_accessor :status, :result
+
+    def initialize(status, message=nil, rval=nil)
+      super(message)
+      @status = status
+      @result = rval
+    end
+  end
+  
   class ManageableMeta < Struct.new(:classname, :package, :description, :mmethods, :options, :statistics, :properties)
     def initialize(*a)
       super *a
@@ -211,6 +221,30 @@ module SPQR
   end
 
   module Manageable
+    # fail takes either (up to) three arguments or a hash
+    # the three arguments are:
+    #   * =status= (an integer failure code)
+    #   * =message= (a descriptive failure message, defaults to nil)
+    #   * =result= (a value to return, defaults to nil; currently ignored by QMF)
+    # the hash simply maps from keys =:status=, =:message=, and =:result= to their respective values.  Only =:status= is required.
+    def fail(*args)
+      unless args.size <= 3 && args.size >= 1
+        raise RuntimeError.new("SPQR::Manageable#fail takes at least one parameter but not more than three; received #{args.inspect}")
+      end
+      
+      if args.size == 1 and args[0].class = Hash
+        failhash = args[0]
+        
+        unless failhash[:status] && failhash[:status].is_a?(Fixnum)
+          raise RuntimeError.new("SPQR::Manageable#fail requires a Fixnum-valued :status parameter when called with keyword arguments; received #{failhash[:status].inspect}")
+        end
+        
+        raise ManageableObjectError.new(failhash[:status], failhash[:message], failhash[:result])
+      end
+      
+      raise ManageableObjectError.new(*args)
+    end
+    
     def qmf_oid
       result = 0
       if self.respond_to? :spqr_object_id 
