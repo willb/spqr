@@ -198,3 +198,38 @@ class Failbot
   qmf_package_name :example
   qmf_class_name :Failbot
 end
+
+class QmfListArg
+  include ::SPQR::Manageable 
+
+
+  def qmf_oid
+    1234
+  end
+
+  def spqr_object_id
+    1234
+  end
+ 
+  def QmfListArg.find_by_id(oid)
+    @objs ||= [QmfListArg.new]
+    @objs[0]
+  end
+  
+  def QmfListArg.find_all
+    @objs ||= [QmfListArg.new]
+    @objs
+  end
+  
+  def double(ls)
+    ls.map {|x| 2 * x}
+  end
+
+  expose :double do |args|
+    args.declare :input, :list, :in
+    args.declare :ls, :list, :out
+  end
+  
+  qmf_class_name :QmfListArg
+  qmf_package_name :example
+end
