@@ -1,3 +1,12 @@
+version 0.2.4
+
+*  Workaround for a crash in qmfengine when running on 32-bit machines
+
+version 0.2.3
+
+*  Fixed a crash that occurred sometimes when attempting to return a 
+   value from a failing method.
+
 version 0.2.2
 
 *  Methods on manageable objects now can call fail(status, message) to 
