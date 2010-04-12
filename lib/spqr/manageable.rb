@@ -255,7 +255,8 @@ module SPQR
         result = object_id
       end
       
-      result & 0x7fffffff
+      # XXX:  this foolishly assumes that we are running on a 64-bit machine or a 32-bit machine
+      result & (0.size == 8 ? 0x7fffffff : 0x3fffffff)
     end
 
     def qmf_id
@@ -287,7 +288,9 @@ module SPQR
         def other.class_id
           package_list = spqr_meta.package.to_s.split(".")
           cls = spqr_meta.classname.to_s or self.name.to_s
-          ((package_list.map {|pkg| pkg.capitalize} << cls).join("::")).hash & 0x7fffffff
+          
+          # XXX:  this foolishly assumes that we are running on a 64-bit machine or a 32-bit machine
+          ((package_list.map {|pkg| pkg.capitalize} << cls).join("::")).hash & (0.size == 8 ? 0x7fffffff : 0x3fffffff)
         end
       end
 
