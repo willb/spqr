@@ -11,7 +11,7 @@ require 'spqr/spqr'
 require 'spqr/app'
 
 module QmfTestHelpers
-  DEBUG = (::ENV["SPQR_TESTS_DEBUG"] and ::ENV["SPQR_TESTS_DEBUG"].downcase == "yes")
+  DEBUG = (::ENV["SPQR_TESTS_DEBUG"] && ((::ENV["SPQR_TESTS_DEBUG"].downcase == "yes" && "yes") || (::ENV["SPQR_TESTS_DEBUG"].downcase == "trace" && "trace")))
   
   class AgentNotifyHandler < Qmf::ConsoleHandler
     def initialize
@@ -47,7 +47,7 @@ module QmfTestHelpers
         $stdout.reopen("/dev/null", "w")
         $stderr.reopen("/dev/null", "w")
       else
-        ENV['QPID_TRACE'] = "1"
+        ENV['QPID_TRACE'] = "1" if DEBUG == "trace"
       end
 
       exec("#{File.dirname(__FILE__)}/generic-agent.rb", *classes.map {|cl| cl.to_s})
