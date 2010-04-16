@@ -1,3 +1,25 @@
+class QmfUserAndContext
+  include ::SPQR::Manageable
+
+  def QmfUserAndContext.find_by_id(oid)
+    @singleton ||= QmfUserAndContext.new
+    @singleton
+  end
+  
+  def QmfUserAndContext.find_all
+    @singleton ||= QmfUserAndContext.new
+    [@singleton]
+  end
+
+  expose :qmf_user_id do |args|
+    args.declare :uid, :sstr, :out
+  end
+
+  expose :qmf_context do |args|
+    args.declare :ctx, :uint64, :out
+  end
+end
+
 class QmfClicker
   include ::SPQR::Manageable
   

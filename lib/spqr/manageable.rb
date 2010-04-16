@@ -245,6 +245,16 @@ module SPQR
       raise ManageableObjectError.new(*args)
     end
     
+    # Returns the user ID of the QMF user invoking this method
+    def qmf_user_id
+      Thread.current[:qmf_user_id]
+    end
+
+    # Returns QMF context of the current method invocation
+    def qmf_context
+      Thread.current[:qmf_context]
+    end
+
     def qmf_oid
       result = 0
       if self.respond_to? :spqr_object_id 

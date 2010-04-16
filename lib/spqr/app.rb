@@ -93,6 +93,9 @@ module SPQR
         class_id = obj_id.object_num_high
         obj_id = obj_id.object_num_low
 
+        Thread.current[:qmf_user_id] = user_id
+        Thread.current[:qmf_context] = context
+
         @log.debug "calling method: context=#{context} method=#{name} object_id=#{obj_id}, user=#{user_id}"
 
         managed_object = find_object(context, class_id, obj_id)
