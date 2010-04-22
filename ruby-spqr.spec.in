@@ -41,6 +41,7 @@ mkdir -p %{buildroot}/%{ruby_sitelib}/spqr
 cp -f lib/spqr/app.rb %{buildroot}/%{ruby_sitelib}/spqr
 cp -f lib/spqr/codegen.rb %{buildroot}/%{ruby_sitelib}/spqr
 cp -f lib/spqr/constants.rb %{buildroot}/%{ruby_sitelib}/spqr
+cp -f lib/spqr/event.rb %{buildroot}/%{ruby_sitelib}/spqr
 cp -f lib/spqr/manageable.rb %{buildroot}/%{ruby_sitelib}/spqr
 cp -f lib/spqr/spqr.rb %{buildroot}/%{ruby_sitelib}/spqr
 cp -f lib/spqr/utils.rb %{buildroot}/%{ruby_sitelib}/spqr
