@@ -399,7 +399,7 @@ module SPQR
   end
 
   class QmfSchemaProcessor
-    include ::SPQR::MiscUtil
+    include ::SPQR::Util
     def initialize(fn)
       @package = nil
       @file = fn

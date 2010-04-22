@@ -59,6 +59,17 @@ module SPQR
       "out" => 'Qmf::DIR_OUT',
       "inout" => 'Qmf::DIR_IN_OUT'
     }
+    
+    Severity = {
+      "emerg" => "Qmf::SEV_EMERG", 
+      "error" => "Qmf::SEV_ERROR", 
+      "notice" => "Qmf::SEV_NOTICE", 
+      "crit" => "Qmf::SEV_CRIT", 
+      "debug" => "Qmf::SEV_DEBUG", 
+      "inform" => "Qmf::SEV_INFORM", 
+      "alert" => "Qmf::SEV_ALERT", 
+      "warn" => "Qmf::SEV_WARN"
+    }
   end
 
 end

@@ -71,11 +71,16 @@ module SPQR
 
         klass.log = @log
         
+        # XXX
+        if klass.included_modules.include?(::SPQR::Manageable)
+          @classes_by_id[klass.class_id] = klass        
+          @classes_by_name[klass.spqr_meta.classname.to_s] = ClassMeta.new(klass, schemaclass)
+        else
+          @log.info "NOT registering query/lookup info for #{klass}; is it an event class?"
+        end
+
         @log.info("SETTING #{klass.spqr_meta.classname}.app to #{self.inspect}")
-        klass.app = self
-        
-        @classes_by_id[klass.class_id] = klass
-        @classes_by_name[klass.spqr_meta.classname.to_s] = ClassMeta.new(klass, schemaclass)
+        klass.app = self        
       end
       
       unmanageable_ks.each do |klass|
@@ -252,6 +257,16 @@ module SPQR
     def schematize(klass)
       @log.info("Making a QMF schema for #{klass.spqr_meta.classname}")
 
+      if klass.respond_to? :schematize
+        @log.info("#{klass.spqr_meta.classname} knows how to schematize itself; it's probably an event class")
+        return klass.schematize 
+      else
+        @log.info("#{klass.spqr_meta.classname} doesn't know how to schematize itself; it's probably an object class")
+        return schematize_object_class(klass)
+      end
+    end
+    
+    def schematize_object_class(klass)
       meta = klass.spqr_meta
       package = meta.package.to_s
       classname = meta.classname.to_s
@@ -269,19 +284,7 @@ module SPQR
         mm.args.each do |arg| 
           @log.info("| +-- creating a QMF schema for arg #{arg}")
           
-          arg_opts = arg.options
-          arg_opts[:desc] ||= arg.description if (arg.description and arg.description.is_a? String)
-          arg_opts[:dir] ||= get_xml_constant(arg.direction.to_s, ::SPQR::XmlConstants::Direction)
-          arg_name = arg.name.to_s
-          arg_type = get_xml_constant(arg.kind.to_s, ::SPQR::XmlConstants::Type)
-          
-          if @log.level <= Logger::DEBUG
-            local_variables.grep(/^arg_/).each do |local|
-              @log.debug("      #{local} --> #{(eval local).inspect}")
-            end
-          end
-
-          method.add_argument(Qmf::SchemaArgument.new(arg_name, arg_type, arg_opts))
+          encode_argument(arg, method)
         end
 
         sc.add_method(method)
@@ -303,36 +306,8 @@ module SPQR
       end
     end
 
-    def manageable?(k)
-      # FIXME:  move out of App, into Manageable or a related utils module?
-      k.is_a? Class and k.included_modules.include? ::SPQR::Manageable
-    end
-
-    def get_xml_constant(xml_key, dictionary)
-      # FIXME:  move out of App, into a utils module?
-      string_val = dictionary[xml_key]
-      return xml_key unless string_val
-
-      actual_val = const_lookup(string_val)
-      return string_val unless actual_val
-
-      return actual_val
-    end
-
-    # turns a string name of a constant into the value of that
-    # constant; returns that value, or nil if fqcn doesn't correspond
-    # to a valid constant
-    def const_lookup(fqcn)
-      # FIXME:  move out of App, into a utils module?
-      hierarchy = fqcn.split("::")
-      const = hierarchy.pop
-      mod = Kernel
-      hierarchy.each do |m|
-        mod = mod.const_get(m)
-      end
-      mod.const_get(const) rescue nil
-    end
-
+    include ::SPQR::Util
+    
     # turns an instance of a managed object into a QmfObject
     def qmfify(obj)
       @log.debug("trying to qmfify #{obj}:  qmf_oid is #{obj.qmf_oid} and class_id is #{obj.class.class_id}")

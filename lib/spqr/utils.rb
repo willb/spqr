@@ -72,17 +72,56 @@ module SPQR
       end
     end
   end
-
-  module MiscUtil
+  
+  module Util
     def symbolize_dict(k, kz=nil)
       k2 = {}
       kz ||= k.keys
 
       k.keys.each do |key|
-        k2[key.to_sym] = k[key] if (kz.include?(key) or kz.include?(key.to_sym))
+        k2[key.to_sym] = k[key] if (kz.include?(key) || kz.include?(key.to_sym))
       end
 
       k2
     end
+    
+    def get_xml_constant(xml_key, dictionary)
+      string_val = dictionary[xml_key]
+      return xml_key unless string_val
+
+      actual_val = const_lookup(string_val)
+      return string_val unless actual_val
+
+      return actual_val
+    end
+    
+    # turns a string name of a constant into the value of that
+    # constant; returns that value, or nil if fqcn doesn't correspond
+    # to a valid constant
+    def const_lookup(fqcn)
+      # FIXME:  move out of App, into a utils module?
+      hierarchy = fqcn.split("::")
+      const = hierarchy.pop
+      mod = Kernel
+      hierarchy.each do |m|
+        mod = mod.const_get(m)
+      end
+      mod.const_get(const) rescue nil
+    end
+    
+    def encode_argument(arg, destination)
+      arg_opts = arg.options
+      arg_opts[:desc] ||= arg.description if (arg.description && arg.description.is_a?(String))
+      arg_opts[:dir] ||= get_xml_constant(arg.direction.to_s, ::SPQR::XmlConstants::Direction) if arg.respond_to? :direction
+      arg_name = arg.name.to_s
+      arg_type = get_xml_constant(arg.kind.to_s, ::SPQR::XmlConstants::Type)
+
+      destination.add_argument(Qmf::SchemaArgument.new(arg_name, arg_type, arg_opts))
+    end
+    
+    def manageable?(k)
+      k.is_a?(Class) && (k.included_modules.include?(::SPQR::Manageable) || k.included_modules.include?(::SPQR::Raiseable))
+    end
+    
   end
 end
