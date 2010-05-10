@@ -1,4 +1,4 @@
-version 0.3.0
+version 0.3.0 (04c1eb70855b6382925c65f350fbb69e9eb58c88)
 
 *  first-class QMF event support via the SPQR::Raiseable mixin.
 *  several small fixes to QMF interoperability (thanks to Ken Giusti 
