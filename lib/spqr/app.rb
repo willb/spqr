@@ -45,6 +45,7 @@ module SPQR
 
       @log.info("initializing SPQR app....")
 
+      @event_classes = []
       @classes_by_name = {}
       @classes_by_id = {}
       @pipe = options[:notifier]
@@ -77,6 +78,7 @@ module SPQR
           @classes_by_name[klass.spqr_meta.classname.to_s] = ClassMeta.new(klass, schemaclass)
         else
           @log.info "NOT registering query/lookup info for #{klass}; is it an event class?"
+          @event_classes << klass
         end
 
         @log.info("SETTING #{klass.spqr_meta.classname}.app to #{self.inspect}")
@@ -212,22 +214,36 @@ module SPQR
 
       @agent = Qmf::Agent.new(self, @app_name)
       @log.debug(" +-- @agent created:  #{@agent}")
+      
+      object_class_count = @classes_by_name.size
+      event_class_count = @event_classes.size
 
+      @log.info(" +-- registering #{object_class_count} object #{pluralize(object_class_count, "class", "classes")} and #{event_class_count} event #{pluralize(event_class_count, "class", "classes")}....")
+      
+      all_schemas = @classes_by_name.values + @event_classes
+      
+      all_schemas.each do |km|
+        identifier = ("object #{km.schema_class.package_name}.#{km.schema_class.class_name}" rescue "#{km.class.to_s}")
+        
+        @log.debug(" +--+-- TRYING to register #{identifier}")
+        @agent.register_class(km.schema_class) 
+        @log.info(" +--+-- #{identifier} REGISTERED")
+      end
+      
       @agent.set_connection(@connection)
       @log.debug(" +-- @agent.set_connection called")
 
-      @log.debug(" +-- registering classes...")
-      @classes_by_name.values.each do |km| 
-        @agent.register_class(km.schema_class) 
-        @log.debug(" +--+-- #{km.schema_class.package_name} #{km.schema_class.class_name} registered")
-      end
-      
       @log.debug("entering orbit....")
 
       sleep
     end
 
     private
+    
+    def pluralize(count, singular, plural=nil)
+      plural ||= "#{singular}s"
+      count == 1 ? singular : plural
+    end
     
     def result_valid(actuals, mm)
       (actuals.kind_of?(Array) and mm.formals_out.size == actuals.size) or mm.formals_out.size <= 1

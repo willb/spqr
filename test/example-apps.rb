@@ -255,3 +255,90 @@ class QmfListArg
   qmf_class_name :QmfListArg
   qmf_package_name :example
 end
+
+class DummyEvent
+  include ::SPQR::Raiseable
+  
+  qmf_class_name :DummyEvent
+  qmf_package_name :example
+  qmf_severity :notice
+end
+
+class QmfDummyEventer
+  include ::SPQR::Manageable 
+
+  def qmf_oid
+    1234
+  end
+
+  def spqr_object_id
+    1234
+  end
+ 
+  def QmfDummyEventer.find_by_id(oid)
+    @objs ||= [QmfDummyEventer.new]
+    @objs[0]
+  end
+  
+  def QmfDummyEventer.find_all
+    @objs ||= [QmfDummyEventer.new]
+    @objs
+  end
+  
+  def party_on
+    DummyEvent.new.bang!
+  end
+
+  expose :party_on do |args|
+  end
+  
+  qmf_class_name :QmfDummyEventer
+  qmf_package_name :example
+end
+
+
+class ArgEvent
+  include ::SPQR::Raiseable
+  
+  arg :arg, :map, "A map from the name of the party_on method to the first count even numbers"
+  
+  qmf_class_name :ArgEvent
+  qmf_package_name :example
+  qmf_severity :notice
+end
+
+class QmfArgEventer
+  include ::SPQR::Manageable 
+
+  def qmf_oid
+    1234
+  end
+
+  def spqr_object_id
+    1234
+  end
+ 
+  def QmfArgEventer.find_by_id(oid)
+    @objs ||= [QmfArgEventer.new]
+    @objs[0]
+  end
+  
+  def QmfArgEventer.find_all
+    @objs ||= [QmfArgEventer.new]
+    @objs
+  end
+  
+  def party_on_one(name, count)
+    ls = (1..count).to_a.map {|x| x*2}
+#    ArgEvent.new({name=>ls}).bang!
+    ArgEvent.new({name=>count}).bang!
+  end
+
+  expose :party_on_one do |args|
+    args.declare :name, :sstr, :in
+    args.declare :count, :uint64, :in
+  end
+  
+  qmf_class_name :QmfArgEventer
+  qmf_package_name :example
+end

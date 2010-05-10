@@ -36,10 +36,12 @@ module SPQR
         @spqr_event_meta ||= EventMeta.new
         @spqr_event_meta.args << EventArgMeta.new(name.to_sym,kind,description,options)
         attr_accessor name.to_sym
+        attr_setters << "#{name.to_s}="
       end
       
       def spqr_meta
-        @spqr_event_meta
+        @spqr_event_meta ||= EventMeta.new
+        
       end
       
       def log=(logger)
@@ -57,11 +59,16 @@ module SPQR
       def app
         @spqr_app
       end
-
+      
+      def attr_setters
+        @attr_setters ||= []
+        @attr_setters
+      end
+      
       def schematize
         severity = get_xml_constant(spqr_meta.severity.to_s, ::SPQR::XmlConstants::Severity)
         
-        @spqr_schema_class = Qmf::SchemaEventClass.new(spqr_meta.package.to_s, spqr_meta.package.to_s, severity)
+        @spqr_schema_class = Qmf::SchemaEventClass.new(spqr_meta.package.to_s, spqr_meta.classname.to_s, severity)
         
         spqr_meta.args.each do |arg|
           encode_argument(arg, @spqr_schema_class)
@@ -83,12 +90,26 @@ module SPQR
       end
       
       def qmf_severity(sev)
-        raise ArgumentError.new("Invalid event severity '#{sev.inspect}'") unless ::SPQR::XmlConstants.keys.include? sev.to_s
+        raise ArgumentError.new("Invalid event severity '#{sev.inspect}'") unless ::SPQR::XmlConstants::Severity.keys.include? sev.to_s
         spqr_meta.severity = sev
       end
+      
+      alias severity qmf_severity
     end
     
     module InstanceMixins
+      def initialize(*args)
+        if args.size > self.class.attr_setters.size
+          msg = "Too many arguments (max #{self.class.attr_setters.size}) to #{self.class.name}#initialize:  #{args}"
+          log.error msg
+          raise ArgumentError.new(msg)
+        end
+        
+        message_pairs = self.class.attr_setters.zip(args).reject {|setter,val| val==nil}
+        message_pairs.each {|message| self.send *message}
+          
+      end
+      
       def app
         self.class.app
       end
@@ -114,25 +135,25 @@ module SPQR
         
         self.class.spqr_meta.args.each do |arg|
           val = self.send arg.name
-          event.send "#{arg.name}=", val
           log.debug "setting #{arg.name} of event to #{val}"
+          event.send "#{arg.name}=", val
         end
+        
+        log.debug "event to raise is #{event.inspect} (#{event})"
+        log.debug "arguments are #{event.arguments.inspect} (#{event.arguments})"
+
         
         app.agent.raise_event(event)
       end
     end
-    
-    alias raise! bang!
-    alias throw! bang!
-    
+        
     def self.included(receiver)
       receiver.extend ClassMixins
       receiver.send :include, InstanceMixins
+      
+      name_components = receiver.name.to_s.split("::")
+      receiver.qmf_class_name name_components.pop
+      receiver.qmf_package_name name_components.join(".").downcase
     end
-  end
-  
-  # A convenience for the common case in which you just want an event class
-  class Event 
-    include Raiseable
   end
 end

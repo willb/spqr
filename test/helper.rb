@@ -10,21 +10,33 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'spqr/spqr'
 require 'spqr/app'
 
+$QMFENGINE_CONSOLE_SUPPORTS_EVENTS = (::ENV["QMFENGINE_CONSOLE_SUPPORTS_EVENTS"] && ::ENV["QMFENGINE_CONSOLE_SUPPORTS_EVENTS"] == "1")
+
 module QmfTestHelpers
   DEBUG = (::ENV["SPQR_TESTS_DEBUG"] && ((::ENV["SPQR_TESTS_DEBUG"].downcase == "yes" && "yes") || (::ENV["SPQR_TESTS_DEBUG"].downcase == "trace" && "trace")))
   
   class AgentNotifyHandler < Qmf::ConsoleHandler
     def initialize
       @q = Queue.new
+      @eq = Queue.new
     end
     
     def queue
       @q
     end
+    
+    def event_queue
+      @eq
+    end
 
     def agent_added(agent)
       puts "GOT AN AGENT:  #{agent} at #{Time.now.utc}" if DEBUG
       @q << agent
+    end
+    
+    def event_received(event)
+      puts "GOT AN EVENT:  #{event} at #{Time.now.utc}"
+      @eq << event
     end
   end
 
@@ -54,7 +66,7 @@ module QmfTestHelpers
       exit! 127
 
       @app = SPQR::App.new(:loglevel => (DEBUG ? :debug : :fatal), :appname=>"#{classes.join("")}[#{Process.pid}]")
-      @app.register *classes
+      @app.register(*classes)
 
       @app.main
     end
