@@ -1,13 +1,22 @@
-version 0.2.4
+version 0.3.0
+
+*  first-class QMF event support via the SPQR::Raiseable mixin.
+*  several small fixes to QMF interoperability (thanks to Ken Giusti 
+   for observations and help)
+*  the current QMF user and context are available to SPQR methods 
+   via Manageable#qmf_user_id and Manageable#qmf_context methods.
+*  various usability improvements to the test suite
+
+version 0.2.4 (f2159d62949e5ed0f0e853bcef28dc4a7e986e48)
 
 *  Workaround for a crash in qmfengine when running on 32-bit machines
 
-version 0.2.3
+version 0.2.3 (ed9a92d249156b57f9d788047f3250b27811fbc8)
 
 *  Fixed a crash that occurred sometimes when attempting to return a 
    value from a failing method.
 
-version 0.2.2
+version 0.2.2 (d6b77f3ca349fe2c9221db5cb796bed1268982e5)
 
 *  Methods on manageable objects now can call fail(status, message) to 
    signal failure in the QMF method response.
