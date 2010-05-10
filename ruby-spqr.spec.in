@@ -57,6 +57,7 @@ rm -rf %{buildroot}
 %{ruby_sitelib}/spqr/app.rb
 %{ruby_sitelib}/spqr/codegen.rb
 %{ruby_sitelib}/spqr/constants.rb
+%{ruby_sitelib}/spqr/event.rb
 %{ruby_sitelib}/spqr/manageable.rb
 %{ruby_sitelib}/spqr/spqr.rb
 %{ruby_sitelib}/spqr/utils.rb
@@ -68,6 +69,9 @@ rm -rf %{buildroot}
 %{_bindir}/spqr-gen.rb
 
 %changelog
+
+* Mon May 10 2010  <willb@redhat> - 0.3.0-1
+- updated to version 0.3.0-1
 
 * Mon Apr 12 2010  <willb@redhat> - 0.2.4-1
 - updated to version 0.2.4-1
