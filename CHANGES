@@ -1,3 +1,7 @@
+version 0.3.1
+
+*  "qmf_singleton" declaration for boilerplate-free singleton classes
+
 version 0.3.0 (04c1eb70855b6382925c65f350fbb69e9eb58c88)
 
 *  first-class QMF event support via the SPQR::Raiseable mixin.
