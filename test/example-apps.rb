@@ -1,15 +1,17 @@
 class QmfUserAndContext
   include ::SPQR::Manageable
 
-  def QmfUserAndContext.find_by_id(oid)
-    @singleton ||= QmfUserAndContext.new
-    @singleton
-  end
+  qmf_singleton
+
+  # def QmfUserAndContext.find_by_id(oid)
+  #   @singleton ||= QmfUserAndContext.new
+  #   @singleton
+  # end
   
-  def QmfUserAndContext.find_all
-    @singleton ||= QmfUserAndContext.new
-    [@singleton]
-  end
+  # def QmfUserAndContext.find_all
+  #   @singleton ||= QmfUserAndContext.new
+  #   [@singleton]
+  # end
 
   expose :qmf_user_id do |args|
     args.declare :uid, :sstr, :out

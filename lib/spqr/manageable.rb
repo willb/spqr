@@ -157,8 +157,22 @@ module SPQR
     # Exposes a method to QMF
     def expose(name, description=nil, options=nil, &blk)
       spqr_meta.declare_method(name, description, options, blk)
-    end      
-    
+    end
+
+    def qmf_singleton
+      def self.instances
+        @instances ||= [self.new]
+      end
+
+      def self.find_all
+        instances
+      end
+
+      def self.find_by_id(id)
+        instances[0]
+      end
+    end
+
     def qmf_package_name(nm)
       spqr_meta.package = nm
     end
