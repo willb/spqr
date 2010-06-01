@@ -317,6 +317,7 @@ module SPQR
       collection.each do |basic|
         basic_name = basic.name.to_s
         basic_type = get_xml_constant(basic.kind.to_s, ::SPQR::XmlConstants::Type)
+        basic.options[:access] = get_xml_constant(basic.options[:access].to_s.upcase, ::SPQR::XmlConstants::Access) if basic.options[:access]
         @log.debug("+-- creating a QMF schema for #{what} #{basic_name} (#{basic_type}) with options #{basic.options.inspect}")
         sc.send(msg, klass.new(basic_name, basic_type, basic.options))
       end

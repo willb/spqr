@@ -95,7 +95,7 @@ class QmfDummyProp
     "DummyPropService"
   end
   
-  qmf_property :service_name, :lstr
+  qmf_property :service_name, :lstr, :access=>"RW"
 
   qmf_class_name :QmfDummyProp
   qmf_package_name :example
