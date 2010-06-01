@@ -159,7 +159,9 @@ module SPQR
       spqr_meta.declare_method(name, description, options, blk)
     end
 
-    def qmf_singleton
+    # Declares that this class is a singleton class; that is, only one
+    # instance will be published over QMF
+    def is_singleton
       def self.instances
         @instances ||= [self.new]
       end
@@ -170,6 +172,40 @@ module SPQR
 
       def self.find_by_id(id)
         instances[0]
+      end
+    end
+
+    # Declares that instances of this class will automatically be
+    # tracked (and find_all and find_by_id methods generated).
+    # Instances of automatically-tracked classes must be explicitly
+    # deleted (with the delete class method).  Do not use automatic
+    # tracking with Rhubarb, which automatically tracks instances for
+    # you.
+    def is_tracked
+      # no pun intended, I promise
+      alias_method :old_new, :new
+      
+      def self.instances
+        @instances ||= {}
+      end
+
+      def self.find_all
+        instances.values
+      end
+
+      def self.find_by_id(id)
+        instances[id]
+      end
+      
+      # XXX:  would it make more sense to call allocate and initialize explicitly?
+      def self.new(*args)
+        result = old_new(*args)
+        instances[result.qmf_oid] = result
+        result
+      end
+
+      def self.delete(instance)
+        instances.delete(instance.qmf_oid)
       end
     end
 
@@ -294,6 +330,7 @@ module SPQR
     def self.included(other)
       class << other
         include ManageableClassMixins
+        alias_method :qmf_singleton, :is_singleton
       end
 
       unless other.respond_to? :find_by_id
