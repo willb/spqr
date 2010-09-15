@@ -92,6 +92,7 @@ module SPQR
 
 
     def method_call(context, name, obj_id, args, user_id)
+      @log.debug("method_call(#{context.inspect}, #{name.inspect}, #{obj_id.inspect}, #{args.inspect}, #{user_id.inspect})")
       begin
         status = 0
         message = "OK"
@@ -103,8 +104,6 @@ module SPQR
         Thread.current[:qmf_user_id] = user_id
         Thread.current[:qmf_context] = context
 
-        @log.debug "calling method: context=#{context} method=#{name} object_id=#{obj_id}, user=#{user_id}"
-
         managed_object = find_object(context, class_id, obj_id)
         @log.debug("managed object is #{managed_object}")
         managed_method = managed_object.class.spqr_meta.mmethods[name.to_sym]
@@ -112,15 +111,8 @@ module SPQR
         raise RuntimeError.new("#{managed_object.class} does not have #{name} exposed as a manageable method; has #{managed_object.class.spqr_meta.mmethods.inspect}") unless managed_method
 
         # Extract actual parameters from the Qmf::Arguments structure into a proper ruby list
-        @log.debug("actual params are: #{args.instance_variable_get(:@by_hash).inspect}") rescue nil
         actuals_in = managed_method.formals_in.inject([]) {|acc,nm| acc << args[nm]}
         actual_count = actuals_in.size
-
-        @log.debug("managed_object.respond_to? #{managed_method.name.to_sym} ==> #{managed_object.respond_to? managed_method.name.to_sym}")
-        @log.debug("managed_object.class.spqr_meta.mmethods.include? #{name.to_sym} ==> #{managed_object.class.spqr_meta.mmethods.include? name.to_sym}")
-        @log.debug("formals:  #{managed_method.formals_in.inspect}")
-        @log.debug("actuals:  #{actuals_in.inspect}")
-
         actuals_out = []
 
         begin
@@ -133,7 +125,7 @@ module SPQR
           raise RuntimeError.new("#{managed_object.class} did not return the appropriate number of return values; got '#{actuals_out.inspect}', but expected #{managed_method.types_out.inspect}") unless result_valid(actuals_out, managed_method)
           
         rescue ::SPQR::ManageableObjectError => failure
-          @log.info "#{name} called SPQR::Manageable#fail:  #{failure}"
+          @log.warn "#{name} called SPQR::Manageable#fail:  #{failure}"
           status = failure.status
           message = failure.message || "ERROR"
           # XXX:  failure.result is currently ignored
@@ -146,9 +138,6 @@ module SPQR
         elsif managed_method.formals_out.size == 1
           actuals_out = [actuals_out] # wrap this up in a list
         end
-        
-        @log.debug("formals_out == #{managed_method.formals_out.inspect}")
-        @log.debug("actuals_out == #{actuals_out.inspect}")
 
         unless failed
           # Copy any out parameters from return value to the
@@ -169,7 +158,7 @@ module SPQR
     end
 
     def get_query(context, query, user_id)
-      @log.debug "query: user=#{user_id} context=#{context} class=#{query.class_name} object_num=#{query.object_id.object_num_low if query.object_id} details=#{query} haveSelect=#{query.impl and query.impl.haveSelect} getSelect=#{query.impl and query.impl.getSelect} (#{query.impl and query.impl.getSelect and query.impl.getSelect.methods.inspect})"
+      @log.debug "get_query: user=#{user_id} context=#{context} class=#{query.class_name} object_num=#{query.object_id && query.object_id.object_num_low} details=#{query}"
 
       cmeta = @classes_by_name[query.class_name]
       objs = []
@@ -188,11 +177,10 @@ module SPQR
       end
 
       objs.each do |obj| 
-        @log.debug("query_response of: #{obj.inspect}")
         @agent.query_response(context, obj) rescue @log.error($!.inspect)
       end
       
-      @log.debug("completing query....")
+      @log.debug("completing query; returned #{objs.size} objects")
       @agent.query_complete(context)
     end
 
@@ -264,9 +252,7 @@ module SPQR
 
     def find_object(ctx, c_id, obj_id)
       # XXX:  context is currently ignored
-      @log.debug("in find_object; class ID is #{c_id}, object ID is #{obj_id}...")
       klass = @classes_by_id[c_id]
-      @log.debug("found class #{klass.inspect}")
       klass.find_by_id(obj_id) if klass
     end
     
@@ -327,7 +313,7 @@ module SPQR
     
     # turns an instance of a managed object into a QmfObject
     def qmfify(obj)
-      @log.debug("trying to qmfify #{obj}:  qmf_oid is #{obj.qmf_oid} and class_id is #{obj.class.class_id}")
+      @log.debug("qmfify: treating instance of #{obj.class.name}:  qmf_oid is #{obj.qmf_oid} and class_id is #{obj.class.class_id}")
       cm = @classes_by_name[obj.class.spqr_meta.classname.to_s]
       return nil unless cm
 
@@ -335,13 +321,8 @@ module SPQR
 
       set_attrs(qmfobj, obj)
 
-      @log.debug("calling alloc_object_id(#{obj.qmf_oid}, #{obj.class.class_id})")
       oid = @agent.alloc_object_id(obj.qmf_oid, obj.class.class_id)
-      
-      @log.debug("calling qmfobj.set_object_id(#{oid})")
       qmfobj.set_object_id(oid)
-      
-      @log.debug("returning from qmfify")
       qmfobj
     end
 
@@ -352,7 +333,6 @@ module SPQR
 
       attrs.each do |a|
         getter = a.name.to_s
-        @log.debug("setting property/statistic #{getter} to its value from #{o}: #{o.send(getter) if o.respond_to?(getter)}")
         value = o.send(getter) if o.respond_to?(getter)
 
         if value || a.kind == :bool
