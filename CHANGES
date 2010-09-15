@@ -1,4 +1,10 @@
-version 0.3.1
+version 0.3.2
+
+*  far less verbose debugging information
+*  is_tracked declaration to automatically track instances of (non-Rhubarb) managed classes.
+*  SPQR now respects access annotations on property declarations.  (obs. from Ian McLeod)
+
+version 0.3.1 (e3e3729bef42fd7a5315356c85ddf30939759b34)
 
 *  "qmf_singleton" declaration for boilerplate-free singleton classes
 

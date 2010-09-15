@@ -70,6 +70,11 @@ rm -rf %{buildroot}
 
 %changelog
 
+* Wed Sep 15 2010  <willb@redhat> - 0.3.2-1
+- updated to version 0.3.2-1
+- removed spurious debugging output
+- access modifiers now respected on properties 
+
 * Mon May 10 2010  <willb@redhat> - 0.3.0-1
 - updated to version 0.3.0-1
 
