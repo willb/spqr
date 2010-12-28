@@ -18,6 +18,7 @@ require 'logger'
 module SPQR
   BACKENDS = %w{qmf rest}
   DEFAULT_OPTIONS = {:backend=>'qmf'}
+  APPCLASS = "App"
 
   def self.setup(options = nil)
     options ||= DEFAULT_OPTIONS.dup.merge(options || {})
@@ -27,9 +28,9 @@ module SPQR
     end
     
     require "spqr/#{backend}_app"
-    backend_class = self.const_get("#{backend.capitalize}App")
-    const_remove("App") if self.const_defined?("App")
-    self.const_set("App", backend_class)
+    backend_class = self.const_get("#{backend.capitalize}#{APPCLASS}")
+    const_remove(APPCLASS) if self.const_defined?(APPCLASS)
+    self.const_set(APPCLASS, backend_class)
   end
   
   setup
