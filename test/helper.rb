@@ -35,7 +35,7 @@ module QmfTestHelpers
     end
     
     def event_received(event)
-      puts "GOT AN EVENT:  #{event} at #{Time.now.utc}"
+      puts "GOT AN EVENT:  #{event} at #{Time.now.utc}" if DEBUG
       @eq << event
     end
   end
