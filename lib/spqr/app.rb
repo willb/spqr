@@ -17,7 +17,8 @@ require 'logger'
 
 module SPQR
   BACKENDS = %w{qmf http}
-  DEFAULT_OPTIONS = {:backend=>'qmf'}
+  DEFAULT_BACKEND = ENV['SPQR_DEFAULT_BACKEND'] || $SPQR_DEFAULT_BACKEND || 'qmf'
+  DEFAULT_OPTIONS = {:backend=>DEFAULT_BACKEND}
   APPCLASS = "App"
 
   def self.setup(options = nil)
