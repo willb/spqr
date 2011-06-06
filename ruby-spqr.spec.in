@@ -1,5 +1,5 @@
 %{!?ruby_sitelib: %global ruby_sitelib %(ruby -rrbconfig -e 'puts Config::CONFIG["sitelibdir"] ')}
-%define rel 1
+%define rel 2
 
 Summary: SPQR:  {Schema Processor|Straightforward Publishing} for QMF agents in Ruby
 Name: ruby-spqr
@@ -38,14 +38,14 @@ A tool that will generate an spqr application from an xml schema file
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/%{_bindir}
 mkdir -p %{buildroot}/%{ruby_sitelib}/spqr
-cp -f lib/spqr/app.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -f lib/spqr/codegen.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -f lib/spqr/constants.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -f lib/spqr/event.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -f lib/spqr/manageable.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -f lib/spqr/spqr.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -f lib/spqr/utils.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -f bin/spqr-gen.rb %{buildroot}/%{_bindir}
+cp -p -f lib/spqr/app.rb %{buildroot}/%{ruby_sitelib}/spqr
+cp -p -f lib/spqr/codegen.rb %{buildroot}/%{ruby_sitelib}/spqr
+cp -p -f lib/spqr/constants.rb %{buildroot}/%{ruby_sitelib}/spqr
+cp -p -f lib/spqr/event.rb %{buildroot}/%{ruby_sitelib}/spqr
+cp -p -f lib/spqr/manageable.rb %{buildroot}/%{ruby_sitelib}/spqr
+cp -p -f lib/spqr/spqr.rb %{buildroot}/%{ruby_sitelib}/spqr
+cp -p -f lib/spqr/utils.rb %{buildroot}/%{ruby_sitelib}/spqr
+cp -p -f bin/spqr-gen.rb %{buildroot}/%{_bindir}
 
 %clean
 rm -rf %{buildroot}
@@ -69,6 +69,9 @@ rm -rf %{buildroot}
 %{_bindir}/spqr-gen.rb
 
 %changelog
+
+* Mon Jun 6 2011 <willb@redhat> - 0.3.3-2
+- Installation now preserves file mode, owner, and modification time
 
 * Fri Feb 4 2011  <willb@redhat> - 0.3.3-1
 - support for alternate authentication mechanisms (BZ 675323)
