@@ -1,5 +1,5 @@
 %{!?ruby_sitelib: %global ruby_sitelib %(ruby -rrbconfig -e 'puts Config::CONFIG["sitelibdir"] ')}
-%define rel 2
+%define rel 3
 
 Summary: SPQR:  {Schema Processor|Straightforward Publishing} for QMF agents in Ruby
 Name: ruby-spqr
@@ -27,7 +27,8 @@ Requires: ruby(abi) = 1.8
 Requires: ruby
 
 %description -n spqr-gen
-A tool that will generate an spqr application from an xml schema file
+spqr-gen is a tool that will generate an SPQR application from an XML 
+QMF schema file.
 
 %prep
 %setup -q
@@ -48,27 +49,30 @@ cp -p -f lib/spqr/utils.rb %{buildroot}/%{ruby_sitelib}/spqr
 cp -p -f bin/spqr-gen.rb %{buildroot}/%{_bindir}
 
 %clean
+%if ! (0%{?fedora} != 0 || 0%{?rhel} > 5)
 rm -rf %{buildroot}
+%endif
 
 %files
+%if ! (0%{?fedora} != 0 || 0%{?rhel} > 5)
 %defattr(-, root, root, -)
+%endif
 %doc LICENSE README.rdoc CHANGES TODO VERSION
 %doc examples
-%{ruby_sitelib}/spqr/app.rb
-%{ruby_sitelib}/spqr/codegen.rb
-%{ruby_sitelib}/spqr/constants.rb
-%{ruby_sitelib}/spqr/event.rb
-%{ruby_sitelib}/spqr/manageable.rb
-%{ruby_sitelib}/spqr/spqr.rb
-%{ruby_sitelib}/spqr/utils.rb
+%{ruby_sitelib}/spqr/
 
 %files -n spqr-gen
+%if ! (0%{?fedora} != 0 || 0%{?rhel} > 5)
 %defattr(-, root, root, -)
+%endif
 %doc LICENSE
 %defattr(755, root, root, -)
 %{_bindir}/spqr-gen.rb
 
 %changelog
+
+* Fri Sep 16 2011 <willb@redhat> - 0.3.3-3
+- Minor packaging tweaks
 
 * Mon Jun 6 2011 <willb@redhat> - 0.3.3-2
 - Installation now preserves file mode, owner, and modification time

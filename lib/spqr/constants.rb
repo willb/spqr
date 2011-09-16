@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 # Constants for SQPR
 #
 # Copyright (c) 2009--2010 Red Hat, Inc.
