@@ -1,14 +1,19 @@
 %{!?ruby_sitelib: %global ruby_sitelib %(ruby -rrbconfig -e 'puts Config::CONFIG["sitelibdir"] ')}
-%define rel 3
+
+%if (0%{?fedora} == 0 && 0%{?rhel} <= 5)
+%global building_for_el5 1
+%else
+%global building_for_el5 0
+%endif
 
 Summary: SPQR:  {Schema Processor|Straightforward Publishing} for QMF agents in Ruby
 Name: ruby-spqr
 Version: SPQR_VERSION
-Release: %{rel}%{?dist}
+Release: 4%{?dist}
 Group: Applications/System
 License: ASL 2.0
 URL: http://git.fedorahosted.org/git/grid/spqr.git
-Source0: %{name}-%{version}-%{rel}.tar.gz
+Source0: https://fedorahosted.org/releases/g/r/grid/%{name}-%{version}.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 Requires: ruby(abi) = 1.8
 Requires: ruby
@@ -36,7 +41,9 @@ QMF schema file.
 %build
 
 %install
+%if %{building_for_el5}
 rm -rf %{buildroot}
+%endif
 mkdir -p %{buildroot}/%{_bindir}
 mkdir -p %{buildroot}/%{ruby_sitelib}/spqr
 cp -p -f lib/spqr/app.rb %{buildroot}/%{ruby_sitelib}/spqr
@@ -48,13 +55,13 @@ cp -p -f lib/spqr/spqr.rb %{buildroot}/%{ruby_sitelib}/spqr
 cp -p -f lib/spqr/utils.rb %{buildroot}/%{ruby_sitelib}/spqr
 cp -p -f bin/spqr-gen.rb %{buildroot}/%{_bindir}
 
+%if %{building_for_el5}
 %clean
-%if ! (0%{?fedora} != 0 || 0%{?rhel} > 5)
 rm -rf %{buildroot}
 %endif
 
 %files
-%if ! (0%{?fedora} != 0 || 0%{?rhel} > 5)
+%if %{building_for_el5}
 %defattr(-, root, root, -)
 %endif
 %doc LICENSE README.rdoc CHANGES TODO VERSION
@@ -62,7 +69,7 @@ rm -rf %{buildroot}
 %{ruby_sitelib}/spqr/
 
 %files -n spqr-gen
-%if ! (0%{?fedora} != 0 || 0%{?rhel} > 5)
+%if %{building_for_el5}
 %defattr(-, root, root, -)
 %endif
 %doc LICENSE
@@ -70,6 +77,9 @@ rm -rf %{buildroot}
 %{_bindir}/spqr-gen.rb
 
 %changelog
+
+* Wed Sep 21 2011 <willb@redhat> - 0.3.3-4
+- Specfile improvements
 
 * Fri Sep 16 2011 <willb@redhat> - 0.3.3-3
 - Minor packaging tweaks
