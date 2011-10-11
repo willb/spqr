@@ -9,7 +9,7 @@
 Summary: SPQR:  {Schema Processor|Straightforward Publishing} for QMF agents in Ruby
 Name: ruby-spqr
 Version: SPQR_VERSION
-Release: 4%{?dist}
+Release: 1%{?dist}
 Group: Applications/System
 License: ASL 2.0
 URL: http://git.fedorahosted.org/git/grid/spqr.git
@@ -77,6 +77,9 @@ rm -rf %{buildroot}
 %{_bindir}/spqr-gen.rb
 
 %changelog
+
+* Tue Oct 11 2011 <willb@redhat> - 0.3.4-1
+- build workflow improvements
 
 * Wed Sep 21 2011 <willb@redhat> - 0.3.3-4
 - Specfile improvements
