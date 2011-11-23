@@ -18,7 +18,7 @@ require 'logger'
 
 module SPQR
   class App < Qmf::AgentHandler
-    VALID_MECHANISMS = %w{ANONYMOUS PLAIN GSSAPI}
+    VALID_MECHANISMS = %w{ANONYMOUS PLAIN GSSAPI DIGEST-MD5 CRAM-MD5 OTP}
 
     class ClassMeta < Struct.new(:object_class, :schema_class) ; end
 
@@ -56,8 +56,8 @@ module SPQR
       @qmf_port = options[:port]
       @qmf_sendUserId = options.has_key?(:send_user_id) ? options[:send_user_id] : (options.has_key?(:user) || options.has_key?(:password))
 
-      @qmf_explicit_auth = options[:mechanism] && options[:mechanism].upcase
-      raise "Invalid authentication mechanism #{@qmf_explicit_auth}" unless (!@qmf_explicit_auth || VALID_MECHANISMS.include?(@qmf_explicit_auth))
+      @qmf_explicit_mechanism = options[:mechanism] && options[:mechanism].upcase
+      raise "Invalid authentication mechanism #{@qmf_explicit_mechanism}" unless (!@qmf_explicit_mechanism || VALID_MECHANISMS.include?(@qmf_explicit_mechanism))
 
       @qmf_user = options[:user]
       @qmf_password = options[:password]
@@ -198,7 +198,7 @@ module SPQR
       settings.password = @qmf_password if @qmf_sendUserId
 
       implicit_mechanism = @qmf_sendUserId ? "PLAIN" : "ANONYMOUS"
-      settings.mechanism = @explicit_mechanism || implicit_mechanism
+      settings.mechanism = @qmf_explicit_mechanism || implicit_mechanism
       
       @connection = Qmf::Connection.new(settings)
       @log.debug(" +-- @connection created:  #{@connection}")
