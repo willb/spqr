@@ -78,6 +78,10 @@ rm -rf %{buildroot}
 
 %changelog
 
+* Wed Nov 23 2011 <willb@redhat> - 0.3.5-1
+- bug fix with explicit authentication mechanisms (BZ 756401)
+- added additional explicit authentication mechanisms (BZ 756402)
+
 * Tue Oct 11 2011 <willb@redhat> - 0.3.4-1
 - build workflow improvements
 
