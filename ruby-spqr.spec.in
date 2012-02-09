@@ -6,6 +6,12 @@
 %global building_for_el5 0
 %endif
 
+%if (0%{?fedora} >= 17)
+%global ruby_abi 1.9.1
+%else
+%global ruby_abi 1.8
+%endif
+
 Summary: SPQR:  {Schema Processor|Straightforward Publishing} for QMF agents in Ruby
 Name: ruby-spqr
 Version: SPQR_VERSION
@@ -15,7 +21,7 @@ License: ASL 2.0
 URL: http://git.fedorahosted.org/git/grid/spqr.git
 Source0: https://fedorahosted.org/releases/g/r/grid/%{name}-%{version}.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-Requires: ruby(abi) = 1.8
+Requires: ruby(abi) = %{?ruby_abi}
 Requires: ruby
 Requires: ruby-qmf
 BuildRequires: ruby
@@ -77,6 +83,9 @@ rm -rf %{buildroot}
 %{_bindir}/spqr-gen.rb
 
 %changelog
+
+* Thu Feb 9 2012 <willb@redhat> - 0.3.6-1
+- Fixes for compatibility with Ruby 1.9
 
 * Wed Nov 23 2011 <willb@redhat> - 0.3.5-1
 - bug fix with explicit authentication mechanisms (BZ 756401)
