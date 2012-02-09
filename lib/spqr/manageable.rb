@@ -236,8 +236,8 @@ module SPQR
         
         # XXX: should cons up a "safe_attr_reader" method that works
         # like this:
-        attr_reader name.to_sym unless instance_methods.include? "#{name}"
-        attr_writer name.to_sym unless instance_methods.include? "#{name}="
+        attr_reader name.to_sym unless method_defined? "#{name}"
+        attr_writer name.to_sym unless method_defined? "#{name}="
       end
     end
     
@@ -247,8 +247,8 @@ module SPQR
       # add a property accessor to instances of other
       self.class_eval do
         # XXX: should cons up a "safe_attr_accessor" method that works like this:
-        attr_reader name.to_sym unless instance_methods.include? "#{name}"
-        attr_writer name.to_sym unless instance_methods.include? "#{name}="
+        attr_reader name.to_sym unless method_defined? "#{name}"
+        attr_writer name.to_sym unless method_defined? "#{name}="
       end
       
       if options and options[:index]
