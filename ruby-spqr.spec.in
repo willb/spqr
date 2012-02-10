@@ -12,10 +12,19 @@
 %global ruby_abi 1.8
 %endif
 
+%if (0%{?fedora} >= 17)
+%global ruby_abi 1.9.1
+%global ruby_appropriate_install_dir %{ruby_vendorlibdir}
+%else
+%global ruby_abi 1.8
+%{!?ruby_sitelib: %global ruby_sitelib %(ruby -rrbconfig -e 'puts Config::CONFIG["sitelibdir"] ')}
+%global ruby_appropriate_install_dir %{ruby_sitelib}
+%endif
+
 Summary: SPQR:  {Schema Processor|Straightforward Publishing} for QMF agents in Ruby
 Name: ruby-spqr
 Version: SPQR_VERSION
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Applications/System
 License: ASL 2.0
 URL: http://git.fedorahosted.org/git/grid/spqr.git
@@ -51,14 +60,14 @@ QMF schema file.
 rm -rf %{buildroot}
 %endif
 mkdir -p %{buildroot}/%{_bindir}
-mkdir -p %{buildroot}/%{ruby_sitelib}/spqr
-cp -p -f lib/spqr/app.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -p -f lib/spqr/codegen.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -p -f lib/spqr/constants.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -p -f lib/spqr/event.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -p -f lib/spqr/manageable.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -p -f lib/spqr/spqr.rb %{buildroot}/%{ruby_sitelib}/spqr
-cp -p -f lib/spqr/utils.rb %{buildroot}/%{ruby_sitelib}/spqr
+mkdir -p %{buildroot}/%{ruby_appropriate_install_dir}/spqr
+cp -p -f lib/spqr/app.rb %{buildroot}/%{ruby_appropriate_install_dir}/spqr
+cp -p -f lib/spqr/codegen.rb %{buildroot}/%{ruby_appropriate_install_dir}/spqr
+cp -p -f lib/spqr/constants.rb %{buildroot}/%{ruby_appropriate_install_dir}/spqr
+cp -p -f lib/spqr/event.rb %{buildroot}/%{ruby_appropriate_install_dir}/spqr
+cp -p -f lib/spqr/manageable.rb %{buildroot}/%{ruby_appropriate_install_dir}/spqr
+cp -p -f lib/spqr/spqr.rb %{buildroot}/%{ruby_appropriate_install_dir}/spqr
+cp -p -f lib/spqr/utils.rb %{buildroot}/%{ruby_appropriate_install_dir}/spqr
 cp -p -f bin/spqr-gen.rb %{buildroot}/%{_bindir}
 
 %if %{building_for_el5}
@@ -72,7 +81,7 @@ rm -rf %{buildroot}
 %endif
 %doc LICENSE README.rdoc CHANGES TODO VERSION
 %doc examples
-%{ruby_sitelib}/spqr/
+%{ruby_appropriate_install_dir}/spqr/
 
 %files -n spqr-gen
 %if %{building_for_el5}
@@ -83,6 +92,9 @@ rm -rf %{buildroot}
 %{_bindir}/spqr-gen.rb
 
 %changelog
+
+* Fri Feb 10 2012 willb <willb@redhat> - 0.3.6-2
+- Packaging fixes for F17.
 
 * Thu Feb 9 2012 <willb@redhat> - 0.3.6-1
 - Fixes for compatibility with Ruby 1.9
