@@ -8,12 +8,6 @@
 
 %if (0%{?fedora} >= 17)
 %global ruby_abi 1.9.1
-%else
-%global ruby_abi 1.8
-%endif
-
-%if (0%{?fedora} >= 17)
-%global ruby_abi 1.9.1
 %global ruby_appropriate_install_dir %{ruby_vendorlibdir}
 %else
 %global ruby_abi 1.8
@@ -43,7 +37,7 @@ SPQR makes it very simple to expose methods on Ruby objects over QMF.
 Summary: Generates an spqr app from an xml schema
 Group: Applications/System
 Requires: ruby-spqr
-Requires: ruby(abi) = 1.8
+Requires: ruby(abi) = %{?ruby_abi}
 Requires: ruby
 
 %description -n spqr-gen
