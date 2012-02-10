@@ -99,6 +99,12 @@ rm -rf %{buildroot}
 * Thu Feb 9 2012 <willb@redhat> - 0.3.6-1
 - Fixes for compatibility with Ruby 1.9
 
+* Wed Feb 08 2012 Bohuslav Kabrda <bkabrda@redhat.com> - 0.3.5-3
+- Rebuilt for Ruby 1.9.3.
+
+* Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.3.5-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Wed Nov 23 2011 <willb@redhat> - 0.3.5-1
 - bug fix with explicit authentication mechanisms (BZ 756401)
 - added additional explicit authentication mechanisms (BZ 756402)
