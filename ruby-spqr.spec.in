@@ -9,8 +9,10 @@
 %if (0%{?fedora} >= 17)
 %global ruby_abi 1.9.1
 %global ruby_appropriate_install_dir %{ruby_vendorlibdir}
+%global requires_ruby_devel 1
 %else
 %global ruby_abi 1.8
+%global requires_ruby_devel 0
 %{!?ruby_sitelib: %global ruby_sitelib %(ruby -rrbconfig -e 'puts Config::CONFIG["sitelibdir"] ')}
 %global ruby_appropriate_install_dir %{ruby_sitelib}
 %endif
@@ -18,7 +20,7 @@
 Summary: SPQR:  {Schema Processor|Straightforward Publishing} for QMF agents in Ruby
 Name: ruby-spqr
 Version: SPQR_VERSION
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: ASL 2.0
 URL: http://git.fedorahosted.org/git/grid/spqr.git
@@ -28,6 +30,9 @@ Requires: ruby(abi) = %{?ruby_abi}
 Requires: ruby
 Requires: ruby-qmf
 BuildRequires: ruby
+%if %{requires_ruby_devel}
+BuildRequires: ruby-devel
+%endif
 BuildArch: noarch
 
 %description
@@ -86,6 +91,9 @@ rm -rf %{buildroot}
 %{_bindir}/spqr-gen.rb
 
 %changelog
+
+* Mon Mar 26 2012 willb <willb@redhat> - 0.3.6-3
+- More packaging fixes for F17.
 
 * Fri Feb 10 2012 willb <willb@redhat> - 0.3.6-2
 - Packaging fixes for F17.
